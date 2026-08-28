@@ -28,7 +28,8 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
-  const [realDevices, setRealDevices] = useState<{ id: string; label: string; isActive: boolean }[]>([]);
+  const [realDevices, setRealDevices] = useState<{ id: string; label: string }[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState("default");
 
   const updateDevicesList = async () => {
     try {
@@ -48,13 +49,18 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
           return {
             id: d.deviceId || String(idx),
             label,
-            isActive: d.deviceId === "default" || idx === 0,
           };
         });
       setRealDevices(outputs);
     } catch (err) {
       console.warn("Could not enumerate audio output devices:", err);
     }
+  };
+
+  const selectDevice = (deviceId: string) => {
+    setSelectedDeviceId(deviceId);
+    const dev = realDevices.find((d) => d.id === deviceId);
+    console.log(`[Audio Output] Destination changed to: ${dev?.label || deviceId}`);
   };
 
   const requestDevicesPermissionAndList = async () => {
@@ -744,9 +750,14 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
                   const isBt = labelLower.includes("bluetooth") || labelLower.includes("wireless") || labelLower.includes("buds") || labelLower.includes("pods") || labelLower.includes("headset");
                   const isAux = labelLower.includes("headphone") || labelLower.includes("aux") || labelLower.includes("jack") || labelLower.includes("line out");
                   const type = isBt ? "Bluetooth Link" : isAux ? "AUX Connection" : "System Output";
+                  const isActive = dev.id === selectedDeviceId;
                   return (
-                    <div key={dev.id} className={`device-item ${dev.isActive ? "active" : ""}`}>
-                      <div className={`device-dot ${dev.isActive ? "active" : ""}`} />
+                    <div 
+                      key={dev.id} 
+                      className={`device-item cursor-pointer ${isActive ? "active" : ""}`}
+                      onClick={() => selectDevice(dev.id)}
+                    >
+                      <div className={`device-dot ${isActive ? "active" : ""}`} />
                       <div className="device-info min-w-0 flex-grow text-left">
                         <span className="font-semibold text-white truncate block text-[11px]">
                           {dev.label}
@@ -758,25 +769,34 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
                 })
               ) : (
                 <>
-                  <div className="device-item active">
-                    <div className="device-dot active" />
-                    <div className="device-info">
+                  <div 
+                    className={`device-item cursor-pointer ${selectedDeviceId === "default" ? "active" : ""}`}
+                    onClick={() => setSelectedDeviceId("default")}
+                  >
+                    <div className={`device-dot ${selectedDeviceId === "default" ? "active" : ""}`} />
+                    <div className="device-info text-left">
                       <span className="font-semibold text-white text-[11px]">Default Speaker</span>
                       <span className="device-type">System Audio Output</span>
                     </div>
                   </div>
-                  <div className="device-item opacity-45 cursor-not-allowed">
-                    <div className="device-dot" />
-                    <div className="device-info">
-                      <span className="text-[11px]">External Aux Speaker</span>
-                      <span className="device-type">AUX Connection • Offline</span>
+                  <div 
+                    className={`device-item cursor-pointer ${selectedDeviceId === "sim-aux" ? "active" : ""}`}
+                    onClick={() => setSelectedDeviceId("sim-aux")}
+                  >
+                    <div className={`device-dot ${selectedDeviceId === "sim-aux" ? "active" : ""}`} />
+                    <div className="device-info text-left text-white">
+                      <span className="text-[11px] text-white">External Aux Speaker</span>
+                      <span className="device-type">AUX Connection</span>
                     </div>
                   </div>
-                  <div className="device-item opacity-45 cursor-not-allowed">
-                    <div className="device-dot" />
-                    <div className="device-info">
-                      <span className="text-[11px]">Bluetooth Headset</span>
-                      <span className="device-type">Bluetooth Target • Offline</span>
+                  <div 
+                    className={`device-item cursor-pointer ${selectedDeviceId === "sim-bt" ? "active" : ""}`}
+                    onClick={() => setSelectedDeviceId("sim-bt")}
+                  >
+                    <div className={`device-dot ${selectedDeviceId === "sim-bt" ? "active" : ""}`} />
+                    <div className="device-info text-left text-white">
+                      <span className="text-[11px] text-white">Bluetooth Headset</span>
+                      <span className="device-type">Bluetooth Link</span>
                     </div>
                   </div>
                 </>

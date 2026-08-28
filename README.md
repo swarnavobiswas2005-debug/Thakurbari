@@ -43,44 +43,6 @@ Containers for text, navigation, and player items are styled with **100% transpa
 *   **Fonts:** Noto Serif Bengali, Inter, Instrument Serif, Caveat (handwritten)
 *   **Hosting:** Vercel
 
----
 
-## 💻 Getting Started
-
-### Prerequisites
-
-*   Node.js (v18+)
-*   npm / yarn / pnpm
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/swarnavobiswas2005-debug/Thakurbari.git
-   cd Thakurbari
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## 🎹 Creative Collaborators
-
-*   **Shandilya Banerjee** — Acoustic, Flute, & Vocal Arrangements
-*   **AlphaInnit** — Modern Beats & Electronic Synths
-*   **GRIM** — Skit Dialogues & Storytelling
-*   **Rxyam** — Mixing & Mastering Engineer
-
----
 
 *Made By Nemesis with 🤍 in Kolkata.*

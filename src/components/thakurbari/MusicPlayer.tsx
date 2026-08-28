@@ -30,6 +30,8 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [realDevices, setRealDevices] = useState<{ id: string; label: string }[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState("default");
+  const [showRerouteToast, setShowRerouteToast] = useState(false);
+  const [toastDeviceName, setToastDeviceName] = useState("");
 
   const updateDevicesList = async () => {
     try {
@@ -60,6 +62,12 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
   const selectDevice = (deviceId: string) => {
     setSelectedDeviceId(deviceId);
     const dev = realDevices.find((d) => d.id === deviceId);
+    setToastDeviceName(dev?.label || deviceId);
+    setShowRerouteToast(true);
+    // Auto hide after 6 seconds
+    setTimeout(() => {
+      setShowRerouteToast(false);
+    }, 6000);
     console.log(`[Audio Output] Destination changed to: ${dev?.label || deviceId}`);
   };
 
@@ -613,6 +621,29 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
                 font-size: 16px;
               }
             }
+
+            .reroute-toast {
+              position: absolute;
+              bottom: 84px;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 340px;
+              background: rgba(15, 10, 7, 0.95);
+              backdrop-filter: blur(20px);
+              -webkit-backdrop-filter: blur(20px);
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+              border-radius: 4px;
+              padding: 12px;
+              z-index: 120;
+              text-align: center;
+              animation: toast-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+
+            @keyframes toast-fade-in {
+              from { opacity: 0; transform: translate(-50%, 10px); }
+              to { opacity: 1; transform: translate(-50%, 0); }
+            }
           `,
         }}
       />
@@ -836,6 +867,16 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
             );
           })}
         </div>
+        {showRerouteToast && (
+          <div className="reroute-toast">
+            <span className="font-semibold text-white text-[11px] block">
+              Output Selected: {toastDeviceName.replace("Audio Output Target", "Device Target")}
+            </span>
+            <span className="text-[9px] opacity-75 mt-1 block leading-normal text-white">
+              To route sound, click Chrome's 🎵 Media Control icon in your toolbar, or select it in your system sound panel.
+            </span>
+          </div>
+        )}
       </div>
     </>
   );

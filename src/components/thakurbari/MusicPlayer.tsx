@@ -271,9 +271,13 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
               transform: translateX(-50%);
               z-index: 100;
               width: 380px;
-              background: transparent; /* 100% transparent */
-              border: 1px solid rgba(255, 255, 255, 0.15);
-              box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+              background: rgba(15, 10, 7, 0.45); /* frosted glass warm dark */
+              backdrop-filter: blur(16px);
+              -webkit-backdrop-filter: blur(16px);
+              border: 1px solid rgba(255, 255, 255, 0.12);
+              box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 15px 35px rgba(0, 0, 0, 0.5);
               border-radius: 4px; /* flat minimalist sharp corners */
               padding: 16px;
               transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);

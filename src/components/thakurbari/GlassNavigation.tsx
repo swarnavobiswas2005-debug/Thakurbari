@@ -37,9 +37,13 @@ export default function GlassNavigation({ activeSection, setActiveSection }: Gla
               color: #f4efe6;
               padding: 10px 20px;
               border-radius: 4px; /* sharp corners */
-              background: transparent; /* 100% transparent */
-              border: 1px solid rgba(255, 255, 255, 0.15);
-              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+              background: rgba(15, 10, 7, 0.45); /* frosted glass */
+              backdrop-filter: blur(16px);
+              -webkit-backdrop-filter: blur(16px);
+              border: 1px solid rgba(255, 255, 255, 0.12);
+              box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 4px 15px rgba(0, 0, 0, 0.3);
               cursor: pointer;
               transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
               display: flex;

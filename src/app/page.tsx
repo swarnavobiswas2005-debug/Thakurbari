@@ -143,9 +143,13 @@ export default function ThakurbariPage() {
               .music-container {
                 max-width: 750px;
                 margin: 0 auto;
-                background: transparent; /* 100% transparent */
-                border: 1px solid rgba(255, 255, 255, 0.15);
-                box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
+                background: rgba(15, 10, 7, 0.6); /* frosted glass */
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                box-shadow: 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                  0 30px 70px rgba(0, 0, 0, 0.7);
                 border-radius: 4px; /* sharp corners */
                 padding: 48px;
                 text-align: left;
@@ -156,8 +160,8 @@ export default function ThakurbariPage() {
                 align-items: center;
                 gap: 16px;
                 padding: 14px;
-                background: transparent; /* 100% transparent */
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.03); /* subtle frosted item */
+                border: 1px solid rgba(255, 255, 255, 0.06);
                 border-radius: 4px; /* sharp corners */
                 margin-top: 12px;
               }

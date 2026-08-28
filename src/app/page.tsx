@@ -177,16 +177,7 @@ export default function ThakurbariPage() {
           }}
         />
 
-        {activeSection === "home" && (
-          <div className="flex flex-col items-center justify-center mt-[24vh] md:mt-[30vh]">
-            <div className="hero-tagline-container">
-              <h1 className="home-title">জোড়াসাঁকো ও সমকাল</h1>
-              <p className="text-[11px] tracking-[0.1em] text-white opacity-85 uppercase font-medium mt-2">
-                Bengali Heritage × Kolkata Nostalgia × Pop Culture
-              </p>
-            </div>
-          </div>
-        )}
+
 
 
 

@@ -417,27 +417,45 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
               padding-top: 12px;
             }
 
+            .playlist-drawer::-webkit-scrollbar {
+              width: 4px;
+            }
+            .playlist-drawer::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .playlist-drawer::-webkit-scrollbar-thumb {
+              background: rgba(255, 255, 255, 0.15);
+              border-radius: 2px;
+            }
+            .playlist-drawer::-webkit-scrollbar-thumb:hover {
+              background: rgba(255, 255, 255, 0.3);
+            }
+
             .playlist-item {
               display: flex;
               align-items: center;
-              gap: 10px;
-              padding: 8px 10px;
+              gap: 12px;
+              padding: 10px 14px;
               border-radius: 4px;
               cursor: pointer;
-              font-size: 12px;
               color: #ffffff;
-              opacity: 0.6;
+              opacity: 0.55;
               transition: all 0.2s ease;
+              margin-bottom: 6px;
+              border-left: 2px solid transparent;
             }
 
-            .playlist-item:hover, .playlist-item.active {
-              background: rgba(255, 255, 255, 0.05);
-              opacity: 1;
+            .playlist-item:hover {
+              background: rgba(255, 255, 255, 0.04);
+              opacity: 0.85;
             }
 
             .playlist-item.active {
               color: #ffffff;
-              background: rgba(255, 255, 255, 0.08);
+              opacity: 1;
+              background: rgba(255, 255, 255, 0.06);
+              border-left: 2px solid #ffffff;
+              border-radius: 0px 4px 4px 0px;
             }
 
             @media (max-width: 768px) {
@@ -566,20 +584,31 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
 
         {/* Slide-out Playlist Drawer */}
         <div className={`playlist-drawer ${playlistOpen ? "open" : ""}`}>
-          {playlist.map((track, index) => (
-            <div
-              key={index}
-              className={`playlist-item ${index === currentTrackIndex ? "active" : ""}`}
-              onClick={() => selectTrack(index)}
-            >
-              <Music className="w-3.5 h-3.5 flex-shrink-0" />
-              <div className="flex-grow min-w-0 text-left">
-                <div className="truncate font-medium">{track.title}</div>
-                <div className="truncate text-[10px] opacity-60">{track.artist}</div>
+          {playlist.map((track, index) => {
+            const isActive = index === currentTrackIndex;
+            return (
+              <div
+                key={index}
+                className={`playlist-item ${isActive ? "active" : ""}`}
+                onClick={() => selectTrack(index)}
+              >
+                <span className="text-[10px] font-mono opacity-40 w-4 flex-shrink-0">
+                  {(index + 1).toString().padStart(2, "0")}
+                </span>
+                <div className="flex-grow min-w-0 text-left">
+                  <div className="truncate font-medium text-xs">{track.title}</div>
+                  <div className="truncate text-[10px] opacity-60">{track.artist}</div>
+                </div>
+                {isActive ? (
+                  <span className="text-[9px] font-mono tracking-wider text-white bg-white/25 px-1.5 py-0.5 rounded flex-shrink-0 animate-pulse">
+                    PLAYING
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono opacity-45 flex-shrink-0">Vol. 1</span>
+                )}
               </div>
-              <span className="text-[10px] font-mono opacity-50">Vol. 1</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </>

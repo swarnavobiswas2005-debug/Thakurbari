@@ -28,6 +28,44 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
+  const [realDevices, setRealDevices] = useState<{ id: string; label: string; isActive: boolean }[]>([]);
+
+  const updateDevicesList = async () => {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const outputs = devices
+        .filter((d) => d.kind === "audiooutput")
+        .map((d, idx) => {
+          let label = d.label;
+          if (!label) {
+            if (d.deviceId === "default") {
+              label = "Default System Speaker";
+            } else {
+              label = `Audio Output Target ${idx}`;
+            }
+          }
+          return {
+            id: d.deviceId || String(idx),
+            label,
+            isActive: d.deviceId === "default" || idx === 0,
+          };
+        });
+      setRealDevices(outputs);
+    } catch (err) {
+      console.warn("Could not enumerate audio output devices:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (devicesOpen) {
+      updateDevicesList();
+      navigator.mediaDevices.addEventListener?.("devicechange", updateDevicesList);
+    }
+    return () => {
+      navigator.mediaDevices.removeEventListener?.("devicechange", updateDevicesList);
+    };
+  }, [devicesOpen]);
 
   const playerRef = useRef<any>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -683,31 +721,53 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
           <div className="devices-popover">
             <div className="devices-header">
               <span className="font-bold text-[9px] tracking-widest uppercase opacity-75">
-                Devices Available
+                Connected Devices
               </span>
             </div>
-            <div className="flex flex-col gap-1 mt-2">
-              <div className="device-item active">
-                <div className="device-dot active" />
-                <div className="device-info">
-                  <span className="font-semibold text-white">Local Browser</span>
-                  <span className="device-type">Chrome Web Audio</span>
-                </div>
-              </div>
-              <div className="device-item opacity-45 cursor-not-allowed">
-                <div className="device-dot" />
-                <div className="device-info">
-                  <span>Jorasanko Courtyard</span>
-                  <span className="device-type">Horn Speakers • Offline</span>
-                </div>
-              </div>
-              <div className="device-item opacity-45 cursor-not-allowed">
-                <div className="device-dot" />
-                <div className="device-info">
-                  <span>Parlor Gramophone</span>
-                  <span className="device-type">HMV Vintage 1892 • Offline</span>
-                </div>
-              </div>
+            <div className="flex flex-col gap-1 mt-2 max-h-[160px] overflow-y-auto pr-1">
+              {realDevices.length > 0 ? (
+                realDevices.map((dev) => {
+                  const labelLower = dev.label.toLowerCase();
+                  const isBt = labelLower.includes("bluetooth") || labelLower.includes("wireless") || labelLower.includes("buds") || labelLower.includes("pods") || labelLower.includes("headset");
+                  const isAux = labelLower.includes("headphone") || labelLower.includes("aux") || labelLower.includes("jack") || labelLower.includes("line out");
+                  const type = isBt ? "Bluetooth Link" : isAux ? "AUX Connection" : "System Output";
+                  return (
+                    <div key={dev.id} className={`device-item ${dev.isActive ? "active" : ""}`}>
+                      <div className={`device-dot ${dev.isActive ? "active" : ""}`} />
+                      <div className="device-info min-w-0 flex-grow text-left">
+                        <span className="font-semibold text-white truncate block text-[11px]">
+                          {dev.label}
+                        </span>
+                        <span className="device-type">{type}</span>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  <div className="device-item active">
+                    <div className="device-dot active" />
+                    <div className="device-info">
+                      <span className="font-semibold text-white text-[11px]">Default Speaker</span>
+                      <span className="device-type">System Audio Output</span>
+                    </div>
+                  </div>
+                  <div className="device-item opacity-45 cursor-not-allowed">
+                    <div className="device-dot" />
+                    <div className="device-info">
+                      <span className="text-[11px]">External Aux Speaker</span>
+                      <span className="device-type">AUX Connection • Offline</span>
+                    </div>
+                  </div>
+                  <div className="device-item opacity-45 cursor-not-allowed">
+                    <div className="device-dot" />
+                    <div className="device-info">
+                      <span className="text-[11px]">Bluetooth Headset</span>
+                      <span className="device-type">Bluetooth Target • Offline</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

@@ -802,6 +802,9 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
                 </>
               )}
             </div>
+            <div className="mt-3 pt-2 border-t border-white/10 text-[9px] opacity-60 text-left leading-normal text-white">
+              ℹ️ Note: Due to browser security constraints, cross-origin players (YouTube) cannot be rerouted via webpage code. Please switch outputs in your system or browser sound settings.
+            </div>
           </div>
         )}
 

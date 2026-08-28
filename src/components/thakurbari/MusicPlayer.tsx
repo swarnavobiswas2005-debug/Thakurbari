@@ -71,6 +71,50 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
     console.log(`[Audio Output] Destination changed to: ${dev?.label || deviceId}`);
   };
 
+  const playTestTone = async () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      
+      // Attempt to set output sink if supported and active
+      if (selectedDeviceId && selectedDeviceId !== "default" && !selectedDeviceId.startsWith("sim-")) {
+        if ((ctx as any).setSinkId) {
+          await (ctx as any).setSinkId(selectedDeviceId);
+        }
+      }
+      
+      const now = ctx.currentTime;
+      
+      // Synthesize a double chime tone (like a bell)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = "triangle";
+      osc1.frequency.setValueAtTime(880, now); // A5
+      gain1.gain.setValueAtTime(0.15, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 1.2);
+      
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(1318.51, now + 0.15); // E6
+      gain2.gain.setValueAtTime(0.12, now + 0.15);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.15);
+      osc2.stop(now + 1.5);
+      
+      console.log(`[Test Tone] Played chime on device ID: ${selectedDeviceId}`);
+    } catch (err) {
+      console.warn("Could not play test tone on device:", err);
+    }
+  };
+
   const requestDevicesPermissionAndList = async () => {
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -833,6 +877,12 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
                 </>
               )}
             </div>
+            <button
+              onClick={playTestTone}
+              className="mt-3 w-full py-1.5 px-3 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white rounded text-[10px] font-semibold tracking-wider uppercase transition-colors"
+            >
+              🔔 Play Test Tone on Device
+            </button>
             <div className="mt-3 pt-2 border-t border-white/10 text-[9px] opacity-60 text-left leading-normal text-white">
               ℹ️ Note: Due to browser security constraints, cross-origin players (YouTube) cannot be rerouted via webpage code. Please switch outputs in your system or browser sound settings.
             </div>

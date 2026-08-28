@@ -164,6 +164,27 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
     };
   }, [isPlayerReady, isPlaying, hasPlayedOnce]);
 
+  // Update browser tab title dynamically
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (!hasPlayedOnce) {
+      document.title = "ঠাকুরবাড়ি Cookups";
+      return;
+    }
+
+    const track = playlist[currentTrackIndex];
+    if (isPlaying) {
+      document.title = `▶ ${track.title} - ${track.artist} | ঠাকুরবাড়ি`;
+    } else {
+      document.title = `⏸ ${track.title} - ${track.artist} | ঠাকুরবাড়ি`;
+    }
+
+    return () => {
+      document.title = "ঠাকুরবাড়ি Cookups";
+    };
+  }, [currentTrackIndex, isPlaying, hasPlayedOnce]);
+
   const togglePlay = () => {
     if (!isPlayerReady || !playerRef.current) return;
 

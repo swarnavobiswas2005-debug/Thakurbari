@@ -57,9 +57,22 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
     }
   };
 
+  const requestDevicesPermissionAndList = async () => {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Silent request to prompt permissions and unlock device labels
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    } catch (e) {
+      console.warn("Media devices permission denied or not supported:", e);
+    }
+    await updateDevicesList();
+  };
+
   useEffect(() => {
     if (devicesOpen) {
-      updateDevicesList();
+      requestDevicesPermissionAndList();
       navigator.mediaDevices.addEventListener?.("devicechange", updateDevicesList);
     }
     return () => {

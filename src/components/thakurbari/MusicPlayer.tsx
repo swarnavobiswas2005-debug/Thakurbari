@@ -77,13 +77,12 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
       if (!AudioContextClass) return;
       const ctx = new AudioContextClass();
       
-      // Attempt to set output sink if supported and active
-      if (selectedDeviceId && selectedDeviceId !== "default" && !selectedDeviceId.startsWith("sim-")) {
-        if ((ctx as any).setSinkId) {
-          await (ctx as any).setSinkId(selectedDeviceId);
-        }
+      // Ensure context is active (Safari/Chrome autoplay guard)
+      if (ctx.state === "suspended") {
+        await ctx.resume();
       }
       
+      const dest = ctx.createMediaStreamDestination();
       const now = ctx.currentTime;
       
       // Synthesize a double chime tone (like a bell)
@@ -94,9 +93,7 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
       gain1.gain.setValueAtTime(0.15, now);
       gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
       osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start(now);
-      osc1.stop(now + 1.2);
+      gain1.connect(dest);
       
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
@@ -105,11 +102,25 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
       gain2.gain.setValueAtTime(0.12, now + 0.15);
       gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
       osc2.connect(gain2);
-      gain2.connect(ctx.destination);
+      gain2.connect(dest);
+      
+      // Setup HTML5 Audio element to play the stream and set the sink ID
+      const audio = new Audio();
+      audio.srcObject = dest.stream;
+      
+      if (selectedDeviceId && selectedDeviceId !== "default" && !selectedDeviceId.startsWith("sim-")) {
+        if ((audio as any).setSinkId) {
+          await (audio as any).setSinkId(selectedDeviceId);
+        }
+      }
+      
+      await audio.play();
+      osc1.start(now);
+      osc1.stop(now + 1.2);
       osc2.start(now + 0.15);
       osc2.stop(now + 1.5);
       
-      console.log(`[Test Tone] Played chime on device ID: ${selectedDeviceId}`);
+      console.log(`[Test Tone] Played routed chime via MediaStream on device: ${selectedDeviceId}`);
     } catch (err) {
       console.warn("Could not play test tone on device:", err);
     }

@@ -1,38 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SmoothScroll from "@/components/SmoothScroll";
-import CanvasBackground from "@/components/ui/CanvasBackground";
-import Navbar from "@/components/Navbar";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
+import ClientLayout from "@/components/ClientLayout";
 
 export const metadata: Metadata = {
-  title: "Swarnavo Biswas | Creative Developer & Web3 Explorer",
-  description: "Minimalist cinematic portfolio of Swarnavo Biswas, a Frontend Developer, Web Designer, and Web3 Explorer. Crafting premium user experiences with beautiful interfaces, clean typography, and smooth layouts.",
-  keywords: ["Swarnavo Biswas", "Frontend Developer", "Web Designer", "Web3 Explorer", "Creative Developer", "Next.js Portfolio", "Awwwards Portfolio", "Cinematic Web Design"],
-  authors: [{ name: "Swarnavo Biswas" }],
-  openGraph: {
-    title: "Swarnavo Biswas | Creative Developer & Web3 Explorer",
-    description: "Minimalist cinematic portfolio. Crafting premium user experiences with beautiful interfaces, clean typography, and smooth layouts.",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Swarnavo Biswas | Creative Developer & Web3 Explorer",
-    description: "Minimalist cinematic portfolio. Crafting premium user experiences with beautiful interfaces.",
-  },
+  title: "ঠাকুরবাড়ি Cookups",
+  description: "A Bengali home, reimagined through modern digital culture. Jorasanko Nostalgia × Bengali Heritage × Pop Culture × Food × Music × Modern Internet Art.",
 };
 
 export default function RootLayout({
@@ -41,23 +13,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} scroll-smooth`}
-    >
-      <body className="relative bg-[#050505] text-white antialiased selection:bg-accent-blue/30 overflow-x-hidden min-h-screen">
-        {/* Fractal Noise grain overlay - layered on top */}
+    <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap" 
+          rel="stylesheet" 
+        />
+      </head>
+      <body className="relative bg-[#0d0705] text-[#f4efe6] antialiased overflow-x-hidden min-h-screen">
         <div className="noise-overlay" />
-        
-        {/* Three.js Animated background - layered underneath */}
-        <CanvasBackground />
-
-        <SmoothScroll>
-          <Navbar />
-          <main className="relative z-10 w-full min-h-screen flex flex-col">
-            {children}
-          </main>
-        </SmoothScroll>
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

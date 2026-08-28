@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, Music } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, Music, Speaker } from "lucide-react";
 import { playlist } from "@/data/playlist";
 
 // Declare YT global namespace for TypeScript
@@ -25,6 +25,7 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const [playlistOpen, setPlaylistOpen] = useState(false);
+  const [devicesOpen, setDevicesOpen] = useState(false);
   const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
 
@@ -483,6 +484,66 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
               border-radius: 0px 4px 4px 0px;
             }
 
+            .devices-popover {
+              position: absolute;
+              bottom: 72px;
+              right: 16px;
+              width: 240px;
+              background: rgba(15, 10, 7, 0.95); /* matching frosted glass */
+              backdrop-filter: blur(16px);
+              -webkit-backdrop-filter: blur(16px);
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+              border-radius: 4px;
+              padding: 12px;
+              z-index: 110;
+              text-align: left;
+            }
+
+            .devices-header {
+              border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+              padding-bottom: 6px;
+              margin-bottom: 8px;
+            }
+
+            .device-item {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              padding: 6px 8px;
+              border-radius: 2px;
+              font-size: 11.5px;
+              color: #ffffff;
+              transition: all 0.2s ease;
+            }
+
+            .device-item.active {
+              background: rgba(255, 255, 255, 0.08);
+            }
+
+            .device-dot {
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: rgba(255, 255, 255, 0.3);
+            }
+
+            .device-dot.active {
+              background: #ffffff;
+              box-shadow: 0 0 8px #ffffff;
+            }
+
+            .device-info {
+              display: flex;
+              flex-direction: column;
+            }
+
+            .device-type {
+              font-size: 9px;
+              opacity: 0.5;
+              margin-top: 1px;
+            }
+
             @media (max-width: 768px) {
               .player-container {
                 width: calc(100% - 40px);
@@ -596,16 +657,60 @@ export default function MusicPlayer({ onPlayStateChange, onFirstPlay }: MusicPla
             />
           </div>
 
+          {/* Connected Devices Button */}
+          <button 
+            className={`player-btn ${devicesOpen ? "text-[#ffffff] bg-white/10" : ""}`}
+            onClick={() => { setDevicesOpen(!devicesOpen); setPlaylistOpen(false); }}
+            disabled={!isPlayerReady}
+            aria-label="Connected Devices"
+          >
+            <Speaker className="w-4 h-4" />
+          </button>
+
           {/* Playlist Button */}
           <button 
             className={`player-btn ${playlistOpen ? "text-[#ffffff] bg-white/10" : ""}`}
-            onClick={() => setPlaylistOpen(!playlistOpen)}
+            onClick={() => { setPlaylistOpen(!playlistOpen); setDevicesOpen(false); }}
             disabled={!isPlayerReady}
             aria-label="Open Playlist"
           >
             <ListMusic className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Connected Devices Popover */}
+        {devicesOpen && (
+          <div className="devices-popover">
+            <div className="devices-header">
+              <span className="font-bold text-[9px] tracking-widest uppercase opacity-75">
+                Devices Available
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 mt-2">
+              <div className="device-item active">
+                <div className="device-dot active" />
+                <div className="device-info">
+                  <span className="font-semibold text-white">Local Browser</span>
+                  <span className="device-type">Chrome Web Audio</span>
+                </div>
+              </div>
+              <div className="device-item opacity-45 cursor-not-allowed">
+                <div className="device-dot" />
+                <div className="device-info">
+                  <span>Jorasanko Courtyard</span>
+                  <span className="device-type">Horn Speakers • Offline</span>
+                </div>
+              </div>
+              <div className="device-item opacity-45 cursor-not-allowed">
+                <div className="device-dot" />
+                <div className="device-info">
+                  <span>Parlor Gramophone</span>
+                  <span className="device-type">HMV Vintage 1892 • Offline</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Slide-out Playlist Drawer */}
         <div className={`playlist-drawer ${playlistOpen ? "open" : ""}`}>
